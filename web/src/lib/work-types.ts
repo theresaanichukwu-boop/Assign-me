@@ -140,3 +140,9 @@ export function workTypeLabel(enumValue: string): string {
   const slug = ENUM_TO_SLUG[enumValue];
   return slug ? WORK_TYPE_REGISTRY[slug].label : enumValue;
 }
+
+export function workTypeSlugFromEnum(enumValue: string): WorkTypeSlug {
+  const slug = ENUM_TO_SLUG[enumValue];
+  if (!slug) throw new Error(`Unknown work type enum: ${enumValue}`);
+  return slug;
+}
