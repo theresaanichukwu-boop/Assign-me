@@ -43,7 +43,7 @@ Positioning: workspace/supervisor, not chatbot. No forced Chapter 1–5 — stru
 
 PRD §§1,3,12. Must not look like chatbot, portal, or playful site.
 
-1. Tokens: navy/teal primary, warm amber accent, reading neutrals, verified/needs-check states; Inter UI, serif output, mono citations; 16px/1.6; 4pt scale, cards, subtle borders; light-first + print-friendly (Times 12, double, A4).
+1. Tokens: navy/teal primary, warm coral #D95D39 accent, reading neutrals, verified/needs-check states; Inter UI, serif output, mono citations; 16px/1.6; 4pt scale, cards, subtle borders; light-first + print-friendly (Times 12, double, A4).
 2. Components (Storybook): website shell + nav (Home, My Work, Research, Tools, References, Profile) + Start New Work; dashboard (Welcome + intelligence + 9 work-type cards); per-work-type intake forms (minimal fields only); workspace (instructions, topic/objectives/RQs, sections, drafts/versions, evidence view, references, review results, progress); citation previews (6 styles) + DOI badges; paywall/meter + trial banner; toasts, empty states, auth forms.
 3. Flows (Figma clickable): signup → profile → welcome → choose work type → create/open workspace → research → build steps → review → resume; multi-work list with status; mobile intake/reading first.
 4. A11y: WCAG AA, keyboard nav, no AI clichés/excessive headings.
