@@ -80,6 +80,9 @@ export default function WorkPage(ctx: { params: Promise<{ id: string }> }) {
       <p className="text-sm text-muted">{workTypeLabel(work.type)}</p>
       <h1 className="font-serif text-3xl text-navy">{work.title}</h1>
       {work.topic && <p className="mt-1 text-muted">{work.topic}</p>}
+      <a href={`/works/${work.id}/research`} className="mt-2 inline-block text-sm font-semibold text-teal">
+        Research & evidence →
+      </a>
 
       <h2 className="mt-8 font-bold">Build step by step</h2>
       <ol className="mt-3 flex flex-col gap-2">
