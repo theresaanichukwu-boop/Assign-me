@@ -122,3 +122,21 @@ export function getWorkType(slug: string): WorkTypeDef {
   if (!def) throw new Error(`Unknown work type: ${slug}`);
   return def;
 }
+
+// Prisma WorkType enum (UPPER_SNAKE) → registry slug.
+const ENUM_TO_SLUG: Record<string, WorkTypeSlug> = {
+  PROJECT: "project",
+  SEMINAR: "seminar",
+  ASSIGNMENT: "assignment",
+  TERM_PAPER: "term-paper",
+  ESSAY: "essay",
+  LIT_REVIEW: "lit-review",
+  CASE_STUDY: "case-study",
+  PROPOSAL: "proposal",
+  PRESENTATION: "presentation",
+};
+
+export function workTypeLabel(enumValue: string): string {
+  const slug = ENUM_TO_SLUG[enumValue];
+  return slug ? WORK_TYPE_REGISTRY[slug].label : enumValue;
+}
