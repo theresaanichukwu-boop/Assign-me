@@ -20,6 +20,10 @@ jobs:
           cache: npm
           cache-dependency-path: web/package-lock.json
       - run: npm ci
+      - run: npx prisma generate
+        env:
+          DATABASE_URL: postgresql://assignme:assignme@localhost:5432/assignme
+      - run: npx next typegen
       - run: npx tsc --noEmit
       - run: npm test
         env:
