@@ -1,0 +1,289 @@
+// AssignMe data model — Postgres + Prisma (no Supabase).
+// Better Auth tables (user/session/account/verification) + app tables.
+// DB: self-hosted Postgres, DATABASE_URL in .env (see .env.example).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// --- Better Auth core (required by better-auth Prisma adapter) ---
+
+model User {
+  id            String    @id @default(cuid())
+  name          String
+  email         String    @unique
+  emailVerified Boolean   @default(false)
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  sessions      Session[]
+  accounts      Account[]
+  profile       Profile?
+  works         Work[]
+  files         File[]
+  usage         Usage[]
+  subscription  Subscription?
+  staffRole     StaffRole?
+  tickets       Ticket[]
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Account {
+  id        String @id @default(cuid())
+  userId    String
+  user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  provider  String
+  accountId String
+  password  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([provider, accountId])
+}
+
+model Verification {
+  id        String   @id @default(cuid())
+  identifier String
+  value     String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@unique([identifier, value])
+}
+
+// --- Academic profile (PRD §3) ---
+
+model Profile {
+  userId        String  @id
+  user          User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course        String
+  university    String
+  faculty       String?
+  department    String
+  level         String
+  country       String?
+  citationStyle String  @default("APA 7")
+  requirements  Json?
+}
+
+// --- Discipline intelligence (PRD §5, versioned packs) ---
+
+model Discipline {
+  id                 String @id @default(cuid())
+  slug               String @unique
+  name               String
+  terminology        Json?
+  structures         Json?
+  researchGuidance   Json?
+  sourceTypes        Json?
+  writingExpectation Json?
+  version            Int    @default(1)
+  works              Work[]
+}
+
+// --- Academic works + builder steps (PRD §§4,8,9) ---
+
+enum WorkType {
+  PROJECT
+  SEMINAR
+  ASSIGNMENT
+  TERM_PAPER
+  ESSAY
+  LIT_REVIEW
+  CASE_STUDY
+  PROPOSAL
+  PRESENTATION
+}
+
+enum WorkStatus {
+  DRAFT
+  IN_PROGRESS
+  IN_REVIEW
+  COMPLETED
+}
+
+model Work {
+  id           String      @id @default(cuid())
+  userId       String
+  user         User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  disciplineId String?
+  discipline   Discipline? @relation(fields: [disciplineId], references: [id])
+  type         WorkType
+  title        String
+  topic        String?
+  objectives   Json?
+  questions    Json?
+  requirements Json?
+  style        String      @default("APA 7")
+  status       WorkStatus  @default(DRAFT)
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  sections     WorkSection[]
+  messages     Message[]
+  sources      Source[]
+  references   Reference[]
+  files        File[]
+  reviews      Review[]
+}
+
+model WorkSection {
+  id        String   @id @default(cuid())
+  workId    String
+  work      Work     @relation(fields: [workId], references: [id], onDelete: Cascade)
+  step      String
+  contentMd String   @db.Text
+  order     Int
+  version   Int      @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([workId, order])
+}
+
+model Conversation {
+  id        String    @id @default(cuid())
+  workId    String
+  createdAt DateTime  @default(now())
+  messages  Message[]
+}
+
+model Message {
+  id             String       @id @default(cuid())
+  workId         String
+  work           Work         @relation(fields: [workId], references: [id], onDelete: Cascade)
+  conversationId String?
+  conversation   Conversation? @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  role           String
+  content        String       @db.Text
+  model          String?
+  tokens         Int?
+  createdAt      DateTime     @default(now())
+}
+
+// --- Evidence engine (PRD §6) ---
+
+enum VerificationStatus {
+  UNCHECKED
+  VERIFIED
+  NEEDS_CHECK
+}
+
+model Source {
+  id        String             @id @default(cuid())
+  workId    String
+  work      Work               @relation(fields: [workId], references: [id], onDelete: Cascade)
+  authors   String?
+  year      Int?
+  title     String
+  journal   String?
+  volume    String?
+  issue     String?
+  pages     String?
+  doi       String?
+  url       String?
+  status    VerificationStatus @default(UNCHECKED)
+  bucket    String? // conceptual | theoretical | empirical
+  metadata  Json?
+  createdAt DateTime           @default(now())
+}
+
+model Reference {
+  id          String   @id @default(cuid())
+  workId      String
+  work        Work     @relation(fields: [workId], references: [id], onDelete: Cascade)
+  sourceId    String?
+  style       String   @default("APA 7")
+  inText      String?
+  referenceText String @db.Text
+  createdAt   DateTime @default(now())
+}
+
+// --- Reviewer (PRD §10) ---
+
+model Review {
+  id        String   @id @default(cuid())
+  workId    String
+  work      Work     @relation(fields: [workId], references: [id], onDelete: Cascade)
+  severity  Json?
+  issues    Json?
+  createdAt DateTime @default(now())
+}
+
+// --- Files in R2, metadata here (PRD §13) ---
+
+model File {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workId    String?
+  work      Work?    @relation(fields: [workId], references: [id], onDelete: Cascade)
+  r2Key     String   @unique
+  filename  String
+  mime      String
+  sizeBytes Int
+  purpose   String   @default("reference")
+  createdAt DateTime @default(now())
+}
+
+// --- Usage, billing via Paystack, staff, tickets (PRD §§2,14) ---
+
+model Usage {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date      DateTime @default(now()) @db.Date
+  task      String
+  tokens    Int      @default(0)
+  count     Int      @default(1)
+  plan      String   @default("free")
+
+  @@index([userId, date])
+}
+
+model Subscription {
+  userId      String   @id
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan        String   @default("free")
+  status      String   @default("active")
+  provider    String   @default("paystack")
+  providerRef String?
+  trialUsed   Boolean  @default(false)
+  updatedAt   DateTime @updatedAt
+}
+
+enum StaffRoleName {
+  ADMIN
+  INTEL_MANAGER
+  SUPPORT
+}
+
+model StaffRole {
+  userId      String        @id
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role        StaffRoleName
+  permissions Json?
+}
+
+model Ticket {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      String
+  status    String   @default("open")
+  assignee  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

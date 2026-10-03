@@ -1,0 +1,34 @@
+name: CI
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main, dev]
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: npm ci
+      - run: npx prisma generate
+        env:
+          DATABASE_URL: postgresql://assignme:assignme@localhost:5432/assignme
+      - run: npx next typegen
+      - run: npx tsc --noEmit
+      - run: npm test
+        env:
+          DATABASE_URL: postgresql://assignme:assignme@localhost:5432/assignme
+      - run: npm run build
+        env:
+          DATABASE_URL: postgresql://assignme:assignme@localhost:5432/assignme
+          BETTER_AUTH_SECRET: ci-placeholder-secret-32-chars-minimum
