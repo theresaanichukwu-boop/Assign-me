@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { PLANS, type PlanSlug } from "@/lib/plans";
 
 interface Sub {
@@ -10,6 +11,7 @@ interface Sub {
 }
 
 export default function BillingCard() {
+  const router = useRouter();
   const [sub, setSub] = useState<Sub | null>(null);
   const [msg, setMsg] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -38,7 +40,7 @@ export default function BillingCard() {
     });
     const d = await r.json();
     setBusy(false);
-    if (r.ok) window.location.href = d.authorizationUrl;
+    if (r.ok) router.push(d.authorizationUrl);
     else setMsg(d.error ?? "Checkout failed.");
   }
 

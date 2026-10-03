@@ -1,0 +1,4 @@
+# Local secrets and tooling — never commit.
+.env
+.env.local
+*.log
