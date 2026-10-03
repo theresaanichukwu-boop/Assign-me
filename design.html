@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AssignMe — Design Preview</title>
+<style>
+  :root {
+    --navy: #0f2a43;
+    --teal: #147a7a;
+    --accent: #d95d39;
+    --bg: #f7f8fa;
+    --card: #ffffff;
+    --ink: #1a2332;
+    --muted: #667085;
+    --line: #e4e7ec;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.6 Inter, system-ui, -apple-system, sans-serif;
+  }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 40px 20px 64px; }
+  .hero {
+    background: linear-gradient(135deg, var(--navy), #1a4a5a);
+    color: #fff;
+    border-radius: 16px;
+    padding: 32px;
+  }
+  .hero h1 { margin: 0.2em 0; font-family: Georgia, "Times New Roman", serif; }
+  .hero p { opacity: 0.9; margin: 0; }
+  h2 { margin-top: 40px; }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 20px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  }
+  .swatches { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; }
+  .sw { height: 56px; border-radius: 10px; }
+  .type-ui { font-family: Inter, system-ui, sans-serif; }
+  .type-serif { font-family: Georgia, "Times New Roman", serif; }
+  .type-mono { font-family: Consolas, ui-monospace, monospace; font-size: 13px; }
+  .btn {
+    border: 0;
+    border-radius: 10px;
+    padding: 12px 20px;
+    font-weight: 600;
+    font-size: 15px;
+    cursor: pointer;
+  }
+  .btn-primary { background: var(--navy); color: #fff; }
+  .btn-accent { background: var(--accent); color: #fff; }
+  .row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  label { font-size: 13px; color: var(--muted); }
+  input, select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    font: inherit;
+    color: var(--ink);
+    background: #fff;
+    margin-top: 4px;
+  }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 640px) { .grid2 { grid-template-columns: 1fr; } }
+  .note { color: var(--muted); font-size: 14px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hero">
+    <small>AssignMe • Design System Preview</small>
+    <h1>Welcome back, Theresa. Your Nursing Academic Intelligence is ready.</h1>
+    <p>Clean + Easy × Serious + Academic. Light-first, print-friendly.</p>
+  </div>
+
+  <h2>1. Colors</h2>
+  <div class="swatches">
+    <div class="card">
+      <div class="sw" style="background: var(--navy)"></div>
+      <p><strong>Navy #0F2A43</strong><br /><span class="note">Primary academic</span></p>
+    </div>
+    <div class="card">
+      <div class="sw" style="background: var(--teal)"></div>
+      <p><strong>Teal #147A7A</strong><br /><span class="note">Research / actions</span></p>
+    </div>
+    <div class="card">
+      <div class="sw" style="background: var(--accent)"></div>
+      <p><strong>Coral #D95D39</strong><br /><span class="note">Warm student accent (refined)</span></p>
+    </div>
+    <div class="card">
+      <div class="sw" style="background: var(--bg); border: 1px solid var(--line)"></div>
+      <p><strong>Canvas #F7F8FA</strong><br /><span class="note">Reading background</span></p>
+    </div>
+  </div>
+
+  <h2>2. Typography</h2>
+  <div class="card">
+    <p class="type-ui"><strong>UI — Inter:</strong> The quick brown fox jumps over the lazy dog. 0123456789</p>
+    <p class="type-serif"><strong>Academic output — Serif:</strong> Evidence-based practice improves patient outcomes when nurses apply current research.</p>
+    <p class="type-mono"><strong>Citations / DOI — Monospace:</strong> Adebayo, T. (2023). https://doi.org/xx.xxxx/…</p>
+    <p class="note">Base 16px / 1.6 line-height. Print: Times New Roman 12, double spacing, A4.</p>
+  </div>
+
+  <h2>3. Styled buttons</h2>
+  <div class="card">
+    <div class="row">
+      <button class="btn btn-primary" type="button">Start New Work</button>
+      <button class="btn btn-accent" type="button">Generate Topic</button>
+    </div>
+    <p class="note">Navy = primary actions. Coral = warm accent actions (shows the refined accent color).</p>
+  </div>
+
+  <h2>4. Sample input</h2>
+  <div class="card">
+    <div class="grid2">
+      <label>Assignment question
+        <input type="text" value="Discuss evidence-based practice…" />
+      </label>
+      <label>Citation style
+        <select>
+          <option>APA 7</option>
+          <option>MLA</option>
+          <option>Harvard</option>
+          <option>Chicago</option>
+          <option>Vancouver</option>
+          <option>IEEE</option>
+        </select>
+      </label>
+    </div>
+    <p class="note">Rounded 10px inputs, 1px line borders, muted labels — minimal per-task intake.</p>
+  </div>
+</div>
+</body>
+</html>

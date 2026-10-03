@@ -2,6 +2,8 @@
 FROM node:24-alpine AS deps
 RUN apk add --no-cache openssl libc6-compat
 WORKDIR /app
+# Tolerate slow/flaky container egress (seen as `npm error network`).
+ENV NPM_CONFIG_FETCH_RETRIES=5 NPM_CONFIG_FETCH_RETRY_MINTIMEOUT=20000 NPM_CONFIG_FETCH_RETRY_MAXTIMEOUT=120000
 COPY package.json package-lock.json ./
 COPY prisma ./prisma
 COPY prisma.config.ts ./

@@ -56,11 +56,10 @@ model Account {
   id        String @id @default(cuid())
   userId    String
   user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  provider  String
-  accountId String
-  password  String?
-  // Better Auth admin + OAuth fields
-  providerId             String?
+  providerId String
+  accountId  String
+  password   String?
+  // Better Auth OAuth fields
   accessToken            String?   @db.Text
   refreshToken           String?   @db.Text
   idToken                String?   @db.Text
@@ -70,7 +69,7 @@ model Account {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@unique([provider, accountId])
+  @@unique([providerId, accountId])
 }
 
 model Verification {
