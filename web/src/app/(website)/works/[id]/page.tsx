@@ -83,6 +83,10 @@ export default function WorkPage(ctx: { params: Promise<{ id: string }> }) {
       <a href={`/works/${work.id}/research`} className="mt-2 inline-block text-sm font-semibold text-teal">
         Research & evidence →
       </a>
+      <br />
+      <a href={`/works/${work.id}/review`} className="mt-1 inline-block text-sm font-semibold text-teal">
+        Academic review →
+      </a>
 
       <h2 className="mt-8 font-bold">Build step by step</h2>
       <ol className="mt-3 flex flex-col gap-2">

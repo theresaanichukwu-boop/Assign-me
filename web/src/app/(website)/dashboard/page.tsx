@@ -5,6 +5,7 @@ import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { WORK_TYPE_REGISTRY, WORK_TYPES, workTypeLabel } from "@/lib/work-types";
 import NewWorkForm from "./NewWorkForm";
+import BillingCard from "./BillingCard";
 
 export default async function DashboardPage() {
   const session = await auth.api.getSession({ headers: await headers() });
@@ -34,6 +35,7 @@ export default async function DashboardPage() {
 
       <h2 className="mt-8 font-bold">Start new work</h2>
       <NewWorkForm />
+      <BillingCard />
 
       <h2 className="mt-8 font-bold">Work types</h2>
       <div className="mt-3 grid gap-3 sm:grid-cols-3">
