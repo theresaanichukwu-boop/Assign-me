@@ -113,7 +113,7 @@ export const WORK_TYPE_REGISTRY: Record<WorkTypeSlug, WorkTypeDef> = {
     structures: ["outline-slides-notes"],
     intake: [req("topic", "Topic"), opt("slides", "Slide count"), opt("audience", "Audience")],
     builderSteps: ["topic", "outline", "slides", "notes", "references"],
-    reviewerChecks: ["structure-fits-work-type", "clarity-flow", "requirements-compliance"],
+    reviewerChecks: ["structure-fits-work-type", "citation-reference-consistency", "clarity-flow", "requirements-compliance"],
   },
 };
 
