@@ -21,6 +21,7 @@ export default function BuilderClient({
   const [draft, setDraft] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [drafting, setDrafting] = useState(false);
 
   function openStep(step: string) {
     setActiveStep(step);
@@ -48,6 +49,21 @@ export default function BuilderClient({
       [activeStep]: { contentMd: data.section.contentMd, version: data.section.version },
     }));
     setActiveStep(null);
+  }
+
+  async function draftWithAI() {
+    if (!activeStep) return;
+    setDrafting(true);
+    setError(null);
+    const r = await fetch(`/api/works/${workId}/generate`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ step: activeStep }),
+    });
+    const data = await r.json();
+    setDrafting(false);
+    if (!r.ok) setError(data.error ?? "Could not draft.");
+    else setDraft(data.draft);
   }
 
   return (
@@ -93,6 +109,13 @@ export default function BuilderClient({
               className="rounded-lg bg-navy px-4 py-2 text-sm font-semibold text-white disabled:opacity-60"
             >
               {saving ? "Saving…" : "Save step"}
+            </button>
+            <button
+              onClick={draftWithAI}
+              disabled={drafting}
+              className="rounded-lg bg-teal px-4 py-2 text-sm font-semibold text-white disabled:opacity-60"
+            >
+              {drafting ? "Drafting…" : "Draft with AI"}
             </button>
             <button
               onClick={() => setActiveStep(null)}
