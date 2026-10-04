@@ -4,6 +4,7 @@ import { headers } from "next/headers";
 import { db } from "@/lib/db";
 import { getWorkType, workTypeLabel, workTypeSlugFromEnum } from "@/lib/work-types";
 import BuilderClient from "./BuilderClient";
+import FilesClient from "./FilesClient";
 
 export default async function WorkPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -11,7 +12,10 @@ export default async function WorkPage({ params }: { params: Promise<{ id: strin
   if (!session) redirect("/login");
   const work = await db.work.findFirst({
     where: { id, userId: session.user.id },
-    include: { sections: { orderBy: { order: "asc" } } },
+    include: {
+      sections: { orderBy: { order: "asc" } },
+      files: { orderBy: { createdAt: "asc" } },
+    },
   });
   if (!work) redirect("/dashboard");
 
@@ -34,6 +38,16 @@ export default async function WorkPage({ params }: { params: Promise<{ id: strin
 
       <h2 className="mt-8 font-bold">Build step by step</h2>
       <BuilderClient workId={work.id} steps={def.builderSteps} initialSaved={saved} />
+      <FilesClient
+        workId={work.id}
+        initialFiles={work.files.map((f) => ({
+          id: f.id,
+          filename: f.filename,
+          mime: f.mime,
+          sizeBytes: f.sizeBytes,
+          purpose: f.purpose,
+        }))}
+      />
     </main>
   );
 }

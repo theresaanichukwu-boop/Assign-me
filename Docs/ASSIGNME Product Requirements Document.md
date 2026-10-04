@@ -3,7 +3,7 @@
 ## Product Requirements Document
 
 **Product:** AssignMe
-**Product Type:** AI academic assistant and academic work platform (website)
+**Product Type:** AI academic assistant and academic work platform (app)
 **Primary Users:** University and college students
 **Business Model:** Freemium with free trial / limited premium preview
 **Core Idea:** An AI academic assistant that understands the type of academic work, researches relevant evidence, helps students build it, and reviews the final work.
@@ -267,7 +267,7 @@ Include a free trial or limited premium preview (e.g. one advanced research run 
 
 Security: secure auth (Better Auth), password hashing, email verification, TLS, RBAC and ownership checks, private R2 files with short-lived access, audit logs, account/work deletion, student control of data.
 
-Technical (locked): website (Next.js App Router + TypeScript + Tailwind), Node API, self-hosted Postgres + Prisma (no Supabase), Better Auth, Cloudflare R2, Paystack, Resend, local-device hosting (Docker + Caddy/Nginx, no Vercel). AI layer = base model + discipline pack + task template + profile + workspace + requirements.
+Technical (locked): app (Next.js App Router + TypeScript + Tailwind), Node API, self-hosted Postgres + Prisma (no Supabase), Better Auth, Cloudflare R2, Paystack, Resend, local-device hosting (Docker + Caddy/Nginx, no Vercel). AI layer = base model + discipline pack + task template + profile + workspace + requirements.
 
 Database stores users, profiles, disciplines/intelligence configs, works, sections/versions, conversations, sources, references, files metadata, usage, plans/subscriptions/payments.
 

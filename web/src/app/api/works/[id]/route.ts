@@ -45,7 +45,10 @@ export async function DELETE(_req: Request, ctx: { params: Promise<{ id: string 
   const { id } = await ctx.params;
   if (!(await ownedWork(userId, id)))
     return NextResponse.json({ error: "Not found." }, { status: 404 });
-  // NOTE: delete R2 objects for work files here (Phase 3 P5) before DB delete.
+  // Remove R2 objects before the DB cascade deletes their metadata.
+  const files = await db.file.findMany({ where: { workId: id }, select: { r2Key: true } });
+  const { deleteObject } = await import("@/lib/r2");
+  await Promise.all(files.map((f) => deleteObject(f.r2Key).catch(() => {})));
   await db.work.delete({ where: { id } });
   return NextResponse.json({ ok: true });
 }
