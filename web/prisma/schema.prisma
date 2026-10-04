@@ -18,10 +18,17 @@ model User {
   email         String    @unique
   emailVerified Boolean   @default(false)
   image         String?
+  // Better Auth admin plugin
+  role          String?
+  banned        Boolean?  @default(false)
+  banReason     String?
+  banExpires    DateTime?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   sessions      Session[]
   accounts      Account[]
+  members       Member[]
+  invitations   Invitation[] @relation("invitedBy")
   profile       Profile?
   works         Work[]
   files         File[]
@@ -39,19 +46,30 @@ model Session {
   expiresAt DateTime
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  impersonatedBy       String?
+  activeOrganizationId String?
+  ipAddress            String?
+  userAgent            String?
 }
 
 model Account {
   id        String @id @default(cuid())
   userId    String
   user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  provider  String
-  accountId String
-  password  String?
+  providerId String
+  accountId  String
+  password   String?
+  // Better Auth OAuth fields
+  accessToken            String?   @db.Text
+  refreshToken           String?   @db.Text
+  idToken                String?   @db.Text
+  accessTokenExpiresAt   DateTime?
+  refreshTokenExpiresAt  DateTime?
+  scope                  String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@unique([provider, accountId])
+  @@unique([providerId, accountId])
 }
 
 model Verification {
@@ -60,8 +78,45 @@ model Verification {
   value     String
   expiresAt DateTime
   createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
 
   @@unique([identifier, value])
+}
+
+// --- Better Auth organization plugin (staff/role management) ---
+
+model Organization {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique
+  logo      String?
+  createdAt DateTime @default(now())
+  metadata  String?
+  members     Member[]
+  invitations Invitation[]
+}
+
+model Member {
+  id             String       @id @default(cuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  userId         String
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role           String       @default("member")
+  createdAt      DateTime     @default(now())
+}
+
+model Invitation {
+  id             String       @id @default(cuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  email          String
+  role           String?
+  status         String       @default("pending")
+  expiresAt      DateTime
+  createdAt      DateTime     @default(now())
+  inviterId      String
+  inviter        User         @relation("invitedBy", fields: [inviterId], references: [id], onDelete: Cascade)
 }
 
 // --- Academic profile (PRD §3) ---
