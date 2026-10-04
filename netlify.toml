@@ -1,0 +1,18 @@
+# Netlify deploy config for AssignMe.
+# Site: https://fanciful-bonbon-8ee10f.netlify.app
+# The Next.js Runtime is automatic; these settings lock in the monorepo paths.
+# Required env vars (Site settings → Environment variables):
+#   DATABASE_URL, BETTER_AUTH_SECRET, BETTER_AUTH_URL (= site URL),
+#   RESEND_API_KEY, RESEND_FROM_EMAIL, PAYSTACK_* (secret/public/webhook),
+#   AI_API_KEY, AI_MODEL, NEXT_PUBLIC_APP_URL (= site URL)
+
+[build]
+  base = "web"
+  command = "npm run build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "24"
+
+# Prisma needs the direct (non-pooled) URL at build time for generate/typecheck.
+# Runtime uses DATABASE_URL (pooled) — both point at the same Render database.
