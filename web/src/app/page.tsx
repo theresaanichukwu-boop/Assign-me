@@ -1,4 +1,13 @@
-const NAV = ["Home", "My Work", "Research", "Tools", "References", "Profile"];
+import Link from "next/link";
+
+const NAV = [
+  { label: "Home", href: "/" },
+  { label: "My Work", href: "/dashboard" },
+  { label: "Research", href: "/dashboard" },
+  { label: "Tools", href: "/dashboard" },
+  { label: "References", href: "/dashboard" },
+  { label: "Profile", href: "/profile" },
+];
 
 const WORK_TYPES = [
   "Research Project",
@@ -19,16 +28,20 @@ export default function Home() {
         <div className="mx-auto flex w-full max-w-5xl flex-wrap items-center gap-2 px-5 py-4">
           <span className="mr-2 text-lg font-extrabold text-navy">AssignMe</span>
           {NAV.map((item) => (
-            <span
-              key={item}
+            <Link
+              key={item.label}
+              href={item.href}
               className="rounded-full border border-line bg-white px-3 py-1 text-sm text-ink"
             >
-              {item}
-            </span>
+              {item.label}
+            </Link>
           ))}
-          <span className="rounded-full bg-navy px-3 py-1 text-sm font-semibold text-white">
+          <Link
+            href="/signup"
+            className="rounded-full bg-navy px-3 py-1 text-sm font-semibold text-white"
+          >
             + Start New Work
-          </span>
+          </Link>
         </div>
       </header>
 
@@ -44,18 +57,33 @@ export default function Home() {
             Research evidence, build step by step, then review — what are you
             working on today?
           </p>
+          <div className="mt-4 flex flex-wrap gap-2">
+            <Link
+              href="/signup"
+              className="rounded-lg bg-white px-4 py-2 text-sm font-bold text-navy"
+            >
+              Start free
+            </Link>
+            <Link
+              href="/login"
+              className="rounded-lg border border-white/40 px-4 py-2 text-sm font-semibold text-white"
+            >
+              Log in
+            </Link>
+          </div>
         </section>
 
         <section className="mt-8">
           <h2 className="text-lg font-bold">Choose a work type</h2>
           <div className="mt-3 flex flex-wrap gap-2">
             {WORK_TYPES.map((type) => (
-              <span
+              <Link
                 key={type}
+                href="/signup"
                 className="rounded-lg bg-[#eef1f4] px-3 py-1.5 text-sm font-medium"
               >
                 {type}
-              </span>
+              </Link>
             ))}
           </div>
           <p className="mt-2 text-sm text-muted">
