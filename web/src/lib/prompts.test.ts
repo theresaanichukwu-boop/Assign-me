@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { DISCIPLINE_PACKS, buildSectionPrompt, packForCourse } from "./prompts";
+import { DISCIPLINE_PACKS, buildSectionPrompt, buildSupervisedDraftPrompt, currentYearRange, packForCourse } from "./prompts";
 
 describe("packForCourse", () => {
   it("selects nursing for nursing courses", () => {
@@ -63,5 +63,24 @@ describe("buildSectionPrompt", () => {
     ]) {
       expect(system.content).toContain(rule);
     }
+  });
+  it("builds a supervised prompt with recency bounds and a cite-only pool", () => {
+    const pool = [
+      { id: "s1", authors: "Adaeze Obi", year: 2024, title: "T", journal: "J", volume: null, issue: null, pages: null, doi: null, url: null },
+      { id: "s2", authors: "John Doe", year: 2010, title: "Old", journal: "J", volume: null, issue: null, pages: null, doi: null, url: null },
+    ];
+    const [, user] = buildSupervisedDraftPrompt(DISCIPLINE_PACKS.nursing, {
+      workTypeLabel: "Seminar",
+      step: "discussion",
+      topic: "Digital competencies",
+      objectives: ["Assess skills"],
+      priorSteps: [{ step: "topic", contentMd: "Chosen topic" }],
+      citationStyle: "APA 7",
+      level: "Final Year",
+    }, pool);
+    expect(user.content).toContain(String(currentYearRange(5).from));
+    expect(user.content).toContain("[S1]");
+    expect(user.content).toContain("cite ONLY these");
+    expect(user.content).toContain("Digital competencies");
   });
 });

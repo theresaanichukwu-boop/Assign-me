@@ -2,6 +2,7 @@
 // Pure functions (unit-tested). The composer merges them with live workspace memory.
 
 import type { ChatMessage } from "./ai";
+import type { CitableSource } from "./citations";
 
 export interface DisciplinePack {
   slug: string;
@@ -36,6 +37,59 @@ export function packForCourse(course: string | null): DisciplinePack {
   const c = (course ?? "").toLowerCase();
   if (c.includes("nurs")) return DISCIPLINE_PACKS.nursing;
   return DISCIPLINE_PACKS.general;
+}
+
+export function currentYearRange(yearsBack = 5): { from: number; to: number } {
+  const to = new Date().getFullYear();
+  return { from: to - yearsBack, to };
+}
+
+export interface SourcePoolItem extends CitableSource {
+  id: string;
+}
+
+export function buildSupervisedDraftPrompt(
+  pack: DisciplinePack,
+  ctx: BuilderContext,
+  pool: SourcePoolItem[],
+): ChatMessage[] {
+  const { from, to } = currentYearRange(5);
+  const prior = ctx.priorSteps
+    .map((s) => `## ${s.step}\n${s.contentMd.slice(0, 1500)}`)
+    .join("\n\n");
+  const objectives =
+    Array.isArray(ctx.objectives) && ctx.objectives.length > 0
+      ? ctx.objectives.join("; ")
+      : String(ctx.objectives ?? "Not specified");
+  const poolText =
+    pool.length > 0
+      ? pool
+          .map(
+            (s, i) =>
+              `[S${i + 1}] ${s.authors ?? "Unknown"} (${s.year ?? "n.d."}). ${s.title} ${s.journal ?? ""}`.trim() +
+              (s.doi ? ` doi:${s.doi}` : ""),
+          )
+          .join("\n")
+      : "No vetted sources available.";
+  const base = buildSectionPrompt(pack, ctx);
+  const supervisor: ChatMessage = {
+    role: "user",
+    content:
+      `Work type: ${ctx.workTypeLabel}\n` +
+      `Topic: ${ctx.topic ?? "Not specified"}\n` +
+      `Objectives: ${objectives}\n\n` +
+      (prior ? `Work so far (build on it, do not repeat verbatim):\n${prior}\n\n` : "") +
+      `Write as a research supervisor: analyse first, then write. ` +
+      `Structure: brief analysis of the topic/objectives fit → critical discussion that explains, compares, ` +
+      `and connects evidence (never a bare list of facts) → contradictions, limitations, and research gaps.\n` +
+      `VETTED SOURCE POOL (real, ${from}–${to}, traceable — cite ONLY these, in ${ctx.citationStyle} style, ` +
+      `in-text throughout; every factual claim needs one):\n${poolText}\n` +
+      `Rules: no source older than ${from}; never invent citations, authors, journals, DOIs, or statistics; ` +
+      `anything unsourced gets [verification needed]; the reference list must match in-text citations exactly; ` +
+      `keep everything tied to the topic, objectives, population, and study context.\n\n` +
+      `Draft the "${ctx.step}" section now.`,
+  };
+  return [base[0], supervisor];
 }
 
 export interface BuilderContext {
