@@ -43,4 +43,25 @@ describe("buildSectionPrompt", () => {
     expect(messages).toHaveLength(2);
     expect(messages[1].content).toContain("thesis");
   });
+  it("encodes supervisor rules, not decoration", () => {
+    const [system] = buildSectionPrompt(DISCIPLINE_PACKS.nursing, {
+      workTypeLabel: "Proposal",
+      step: "methodology",
+      topic: "X",
+      objectives: ["Y"],
+      priorSteps: [],
+      citationStyle: "APA 7",
+      level: "Final Year",
+    });
+    for (const rule of [
+      "Do NOT blindly agree",
+      "NEVER invent references",
+      "verification needed",
+      "clarification questions",
+      "variables",
+      "population",
+    ]) {
+      expect(system.content).toContain(rule);
+    }
+  });
 });

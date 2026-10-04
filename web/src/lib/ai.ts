@@ -43,7 +43,9 @@ export async function complete(
         system_instruction: system ? { parts: [{ text: system }] } : undefined,
         contents,
         generationConfig: {
-          maxOutputTokens: opts?.maxTokens ?? 1200,
+          // Reasoning models spend output budget on thinking; keep headroom
+          // so visible text is not cut off (seen truncated at ~150 chars on 600).
+          maxOutputTokens: opts?.maxTokens ?? 2048,
           temperature: opts?.temperature ?? 0.7,
         },
       }),
