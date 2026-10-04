@@ -28,7 +28,7 @@ describe("buildSectionPrompt", () => {
     expect(all).toContain("Seminar");
     expect(all).toContain("discussion");
     expect(all).toContain("Digital competencies");
-    expect(all).toContain("Never invent references");
+    expect(all).toContain("NEVER invent references");
   });
   it("handles empty memory gracefully", () => {
     const messages = buildSectionPrompt(DISCIPLINE_PACKS.general, {
